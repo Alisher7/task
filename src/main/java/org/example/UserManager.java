@@ -4,20 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserManager {
-    private ArrayList<User> users = new ArrayList<User>();
+    private static List<User> users = new ArrayList<>();
     private int id = 0;
 
     public UserManager() {
         users = new ArrayList<>();
     }
 
-    public List<User> getUsers() {
+    public static List<User> getUsers() {
         return users;
-    }
-
-    public void findTask(int id) {
-        ArrayList<Task> list = new ArrayList<>();
-
     }
 
     public void addUser(User user) {
@@ -27,6 +22,19 @@ public class UserManager {
 
     public void removeUser(User user) {
         users.remove(user);
+    }
+
+    static {
+        User admin = new User("admin", "admin");
+        User user = new User("user", "user");
+
+        users.add(admin);
+        users.add(user);
+    }
+
+    @Override
+    public String toString() {
+        return users.toString();
     }
 
 }

@@ -37,4 +37,13 @@ public class TaskManager {
         return tasks;
     }
 
+    public void updateTask(int id, String title, String description, String status) {
+        for (Task task : tasks) {
+            if (task.getId() == id) {
+                task.setTitle(title);
+                task.setDescription(description);
+                task.setStatus(status);
+            }
+        }
+    }
 }
