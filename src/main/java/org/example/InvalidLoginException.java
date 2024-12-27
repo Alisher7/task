@@ -1,8 +1,8 @@
 package org.example;
 
-public class LoginException extends Exception{
+public class InvalidLoginException extends Exception{
 
-    public LoginException(String message){
+    public InvalidLoginException(String message){
         super(message);
     }
 

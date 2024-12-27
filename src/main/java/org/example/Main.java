@@ -2,11 +2,7 @@ package org.example;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class Main {
     public static void sortArray(int[] arr) {
@@ -85,46 +81,69 @@ public class Main {
 //        userManager.addUser(admin);
 //        userManager.addUser(user);
         Scanner scan = new Scanner(System.in);
-        System.out.println("Введите логин: ");
-        String login = scan.nextLine();
-        System.out.println("Введите пароль: ");
-        String password = scan.nextLine();
-        List<User> userList2 = userList.stream()
-                .filter(u -> u.getLogin().equals(login) && u.getPassword().equals(password))
-                .toList();
-        for (int i = 0; i < userList2.size(); i++) {
+        try (scan) {
+            System.out.println("Введите логин: ");
+            String login = scan.nextLine();
+            System.out.println("Введите пароль: ");
+            String password = scan.nextLine();
+            User user = userList.stream()
+                    .filter(u -> u.getLogin().equals(login) && u.getPassword().equals(password))
+                    .findFirst()
+                    .orElseThrow(() -> new InvalidLoginException("Неверный логин или пароль"));
+            System.out.println("Вы вошли в систему: " + user.getLogin());
             while (true) {
                 taskManager.crud();
-                int command = scan.nextInt();
-                if (command == 1) {
+                try {
+                    int command = scan.nextInt();
                     scan.nextLine();
-                    System.out.println("Введите наименование задачи:");
-                    String title = scan.nextLine();
-                    System.out.println("Введите описание задачи:");
-                    String description = scan.nextLine();
-                    Task newTask = new Task(title, description, "new_Task");
-                    taskManager.addTask(newTask);
-                } else if (command == 2) {
-                    System.out.println(taskManager.readTasks());
-                } else if (command == 3) {
-                    System.out.println("Укажите ID задачи которую хотите изменить: ");
-                    int id = scan.nextInt();
+                    if (command == 1) {
+                        System.out.println("Введите наименование задачи:");
+                        String title = scan.nextLine();
+                        System.out.println("Введите описание задачи:");
+                        String description = scan.nextLine();
+                        System.out.println("Введите статус задачи:");
+                        String status = scan.nextLine();
+                        Task newTask = new Task(title, description, status);
+                        taskManager.addTask(newTask);
+                    } else if (command == 2) {
+                        if (!taskManager.readTasks().isEmpty()) {
+                            System.out.println(taskManager.readTasks());
+                        } else {
+                            System.out.println("Задачь нет");
+                        }
+                    } else if (command == 3) {
+                        if (!taskManager.readTasks().isEmpty()) {
+                            System.out.println("Укажите ID задачи которую хотите изменить: ");
+                            int id = scan.nextInt();
+                            scan.nextLine();
+                            System.out.println("Изменить наименование задачи: ");
+                            String title = scan.nextLine();
+                            System.out.println("Изменить описание задачи: ");
+                            String description = scan.nextLine();
+                            System.out.println("Изменить статус задачи: ");
+                            String status = scan.nextLine();
+                            taskManager.updateTask(id, title, description, status);
+                        }
+                    } else if (command == 4) {
+                        if (taskManager.readTasks().isEmpty()) {
+                            System.out.println("Укажите ID задачу которую хотите удалить: ");
+                            int id = scan.nextInt();
+                            taskManager.removeTask(id);
+                        } else {
+                            System.out.println("Нет задач");
+                        }
+                    } else if (command == 5) {
+                        System.exit(0);
+                    } else {
+                        System.out.println("Неизвестная команда, попробуйте снова");
+                    }
+                } catch (InputMismatchException ime) {
+                    System.out.println("Ошибка: Введите числовое значение");
                     scan.nextLine();
-                    System.out.println("Изменить наименование задачи: ");
-                    String title = scan.nextLine();
-                    System.out.println("Изменить описание задачи: ");
-                    String description = scan.nextLine();
-                    System.out.println("Изменить статус задачи: ");
-                    String status = scan.nextLine();
-                    taskManager.updateTask(id, title, description, status);
-                } else if (command == 4) {
-                    System.out.println("Укажите ID задачу которую хотите удалить: ");
-                    int id = scan.nextInt();
-                    taskManager.removeTask(id);
-                } else if (command == 5) {
-                    System.exit(0);
                 }
             }
+        } catch (InvalidLoginException e) {
+            System.out.println("Ошибка: " + e.getMessage());
         }
         //end
     }
